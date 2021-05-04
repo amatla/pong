@@ -8,11 +8,13 @@ class Model {
       this.table.size.y / 2,
       6,
     );
+    this.ball.velocity.magnitude = 1;
     this.ballEvent = new Event();
   }
 
   update() {
-    console.log('triggering');
+    this.ball.position.x += this.ball.velocity.x;
+    this.ball.position.y += this.ball.velocity.y;
     this.ballEvent.trigger({
       x: this.ball.position.x,
       y: this.ball.position.y,
@@ -21,6 +23,12 @@ class Model {
   }
 }
 
+class Point {
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+  }
+}
 class Vector2D {
   constructor(x = 0, y = 0) {
     this.x = x;
@@ -45,7 +53,7 @@ class Table {
 
 class Ball {
   constructor(positionX = 0, positionY = 0, radius = 5) {
-    this.position = new Vector2D(positionX, positionY);
+    this.position = new Point(positionX, positionY);
     this.radius = radius;
     this.velocity = new Vector2D();
   }

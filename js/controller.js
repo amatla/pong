@@ -5,7 +5,7 @@ class Controller {
   constructor() {
     this.model = new Model();
     this.view = new View();
-
+    this.start;
     this.model.ballEvent.addListner((ball) =>
       this.view.setBall(ball),
     );

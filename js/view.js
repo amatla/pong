@@ -11,22 +11,18 @@ class View {
     };
   }
   setBall(ball) {
-    console.log('setball');
-    console.log('ball', ball);
     this.ball.x = ball.x;
     this.ball.y = ball.y;
     this.ball.radius = ball.radius;
-    console.log('ballX = ', this.ball.x);
-    console.log('ballY = ', this.ball.y);
-    console.log('radius = ', this.ball.radius);
   }
   clear() {
-    console.log(this.ctx);
-    this.ctx.fillstyle = 'black';
-    this.ctx.fillRect(0, 0, this.cvs.width, this.cvs.height);
+    this.ctx.fillStyle = 'black';
+    this.ctx.rect(0, 0, this.cvs.width, this.cvs.height);
+    this.ctx.fill();
   }
+
   drawBall() {
-    this.ctx.fillStyle = '#fff';
+    this.ctx.fillStyle = 'white';
     this.ctx.beginPath();
     this.ctx.arc(
       this.ball.x,
@@ -36,7 +32,7 @@ class View {
       2 * Math.PI,
       false,
     );
-    this.ctx.closePath();
+
     this.ctx.fill();
   }
   render() {
