@@ -4,10 +4,26 @@ class Model {
   constructor() {
     this.table = new Table(600, 400);
     this.ball = new Ball(
-      this.table.size.x / 2,
-      this.table.size.y / 2,
+      this.table.width / 2,
+      this.table.height / 2,
       6,
     );
+    this.player = new Player(
+      10,
+      this.table.height / 2 - 50,
+      15,
+      100,
+      'Player',
+    );
+    this.ai = new Player(
+      this.table.width - 25,
+      this.table.height / 2 - 50,
+      15,
+      100,
+      'AI',
+    );
+    this.playerEvent = new Event();
+    this.aiEvent = new Event();
     this.initialSpeed = 2;
     this.initialDirection = Math.random() * (2 * Math.PI);
     [this.ball.velocity.x, this.ball.velocity.y] = [
@@ -18,6 +34,18 @@ class Model {
   }
 
   update() {
+    this.playerEvent.trigger({
+      x: this.player.position.x,
+      y: this.player.position.y,
+      width: this.player.width,
+      height: this.player.height,
+    });
+    this.aiEvent.trigger({
+      x: this.ai.position.x,
+      y: this.ai.position.y,
+      width: this.ai.width,
+      height: this.ai.height,
+    });
     this.ball.position.x += this.ball.velocity.x;
     this.ball.position.y += this.ball.velocity.y;
     this.ballEvent.trigger({
@@ -26,14 +54,13 @@ class Model {
       radius: this.ball.radius,
     });
     this.collision();
-    console.log(this.ball.speed);
   }
 
   collision() {
-    if (this.ball.bottom >= this.table.size.y || this.ball.top <= 0) {
+    if (this.ball.bottom >= this.table.height || this.ball.top <= 0) {
       this.ball.velocity.y *= -1;
     }
-    if (this.ball.right >= this.table.size.x || this.ball.left <= 0)
+    if (this.ball.right >= this.table.width || this.ball.left <= 0)
       this.ball.velocity.x *= -1;
   }
 }
@@ -49,20 +76,20 @@ class Vector2D {
     this.y = y;
   }
   get magnitude() {
-    return Math.sqrt(this.x * this.x + this.y * this.y);
+    if (this.x === 0 && this.y === 0) return 0;
+    else return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 }
-
 class Table {
-  constructor(x = 0, y = 0) {
-    this.size = new Vector2D(x, y);
-    this.position = new Vector2D(0, 0);
+  constructor(width = 0, height = 0) {
+    this.width = width;
+    this.height = height;
+    this.position = new Point(0, 0);
   }
 }
-
 class Ball {
-  constructor(positionX = 0, positionY = 0, radius = 5) {
-    this.position = new Point(positionX, positionY);
+  constructor(posX = 0, posY = 0, radius = 5) {
+    this.position = new Point(posX, posY);
     this.radius = radius;
     this.velocity = new Vector2D(1, 1);
   }
@@ -88,6 +115,22 @@ class Ball {
   }
   get left() {
     return this.position.x - this.radius;
+  }
+}
+class Player {
+  constructor(
+    posX = 0,
+    posY = 0,
+    width = 10,
+    height = 50,
+    name = '',
+  ) {
+    this.name = name;
+    this.score = 0;
+    this.position = new Point(posX, posY);
+    this.width = width;
+    this.height = height;
+    this.velocity = new Vector2D(0, 0);
   }
 }
 export default Model;

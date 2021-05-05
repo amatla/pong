@@ -9,6 +9,10 @@ class Controller {
     this.model.ballEvent.addListner((ball) =>
       this.view.setBall(ball),
     );
+    this.model.playerEvent.addListner((player) =>
+      this.view.setPlayer(player),
+    );
+    this.model.aiEvent.addListner((ai) => this.view.setAi(ai));
   }
 
   run() {
