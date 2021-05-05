@@ -8,7 +8,8 @@ class Model {
       this.table.size.y / 2,
       6,
     );
-    this.ball.velocity.magnitude = 1;
+    this.ball.velocity.x = 1;
+    this.ball.velocity.y = 1;
     this.ballEvent = new Event();
   }
 
@@ -20,9 +21,17 @@ class Model {
       y: this.ball.position.y,
       radius: this.ball.radius,
     });
+    this.collision();
+  }
+
+  collision() {
+    if (this.ball.bottom >= this.table.size.y || this.ball.top <= 0) {
+      this.ball.velocity.y *= -1;
+    }
+    if (this.ball.right >= this.table.size.x || this.ball.left <= 0)
+      this.ball.velocity.x *= -1;
   }
 }
-
 class Point {
   constructor(x = 0, y = 0) {
     this.x = x;
@@ -56,6 +65,18 @@ class Ball {
     this.position = new Point(positionX, positionY);
     this.radius = radius;
     this.velocity = new Vector2D();
+  }
+  get bottom() {
+    return this.position.y + this.radius;
+  }
+  get top() {
+    return this.position.y - this.radius;
+  }
+  get right() {
+    return this.position.x + this.radius;
+  }
+  get left() {
+    return this.position.x - this.radius;
   }
 }
 export default Model;
