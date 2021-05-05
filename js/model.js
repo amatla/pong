@@ -8,8 +8,12 @@ class Model {
       this.table.size.y / 2,
       6,
     );
-    this.ball.velocity.x = 1;
-    this.ball.velocity.y = 1;
+    this.initialSpeed = 2;
+    this.initialDirection = Math.random() * (2 * Math.PI);
+    [this.ball.velocity.x, this.ball.velocity.y] = [
+      Math.cos(this.initialDirection) * this.initialSpeed,
+      Math.sin(this.initialDirection) * this.initialSpeed,
+    ];
     this.ballEvent = new Event();
   }
 
@@ -22,6 +26,7 @@ class Model {
       radius: this.ball.radius,
     });
     this.collision();
+    console.log(this.ball.speed);
   }
 
   collision() {
@@ -46,11 +51,6 @@ class Vector2D {
   get magnitude() {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
-  set magnitude(magnitude) {
-    let direction = Math.atan2(this.y, this.x);
-    this.x = Math.cos(direction) * magnitude;
-    this.y + Math.sin(direction) * magnitude;
-  }
 }
 
 class Table {
@@ -64,7 +64,18 @@ class Ball {
   constructor(positionX = 0, positionY = 0, radius = 5) {
     this.position = new Point(positionX, positionY);
     this.radius = radius;
-    this.velocity = new Vector2D();
+    this.velocity = new Vector2D(1, 1);
+  }
+  get speed() {
+    return this.velocity.magnitude;
+  }
+  set speed(speed) {
+    let norm = [
+      this.velocity.x / this.velocity.magnitude,
+      this.velocity.y / this.velocity.magnitude,
+    ];
+    this.velocity.x = norm[0] * speed;
+    this.velocity.y = norm[1] * speed;
   }
   get bottom() {
     return this.position.y + this.radius;
