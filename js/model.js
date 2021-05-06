@@ -9,15 +9,15 @@ class Model {
       6,
     );
     this.player = new Player(
-      10,
-      this.table.height / 2 - 50,
+      0,
+      this.table.height / 2,
       15,
       100,
       'Player',
     );
     this.ai = new Player(
-      this.table.width - 25,
-      this.table.height / 2 - 50,
+      this.table.width,
+      this.table.height / 2,
       15,
       100,
       'AI',
@@ -33,19 +33,32 @@ class Model {
     this.ballEvent = new Event();
   }
 
+  updateAI() {
+    if (this.ball.top - this.ai.height / 2 <= 0) {
+      this.ai.position.y = this.ai.height / 2;
+    } else if (
+      this.ball.bottom + this.ai.height / 2 >=
+      this.table.height
+    ) {
+      this.ai.position.y = this.table.height - this.ai.height / 2;
+    } else this.ai.position.y = this.ball.position.y;
+  }
+
   update() {
-    this.playerEvent.trigger({
-      x: this.player.position.x,
-      y: this.player.position.y,
-      width: this.player.width,
-      height: this.player.height,
-    });
+    this.updateAI();
     this.aiEvent.trigger({
       x: this.ai.position.x,
       y: this.ai.position.y,
       width: this.ai.width,
       height: this.ai.height,
     });
+    this.playerEvent.trigger({
+      x: this.player.position.x,
+      y: this.player.position.y,
+      width: this.player.width,
+      height: this.player.height,
+    });
+    this.collision();
     this.ball.position.x += this.ball.velocity.x;
     this.ball.position.y += this.ball.velocity.y;
     this.ballEvent.trigger({
@@ -53,7 +66,6 @@ class Model {
       y: this.ball.position.y,
       radius: this.ball.radius,
     });
-    this.collision();
   }
 
   collision() {
@@ -62,22 +74,6 @@ class Model {
     }
     if (this.ball.right >= this.table.width || this.ball.left <= 0)
       this.ball.velocity.x *= -1;
-  }
-}
-class Point {
-  constructor(x = 0, y = 0) {
-    this.x = x;
-    this.y = y;
-  }
-}
-class Vector2D {
-  constructor(x = 0, y = 0) {
-    this.x = x;
-    this.y = y;
-  }
-  get magnitude() {
-    if (this.x === 0 && this.y === 0) return 0;
-    else return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 }
 class Table {
@@ -131,6 +127,34 @@ class Player {
     this.width = width;
     this.height = height;
     this.velocity = new Vector2D(0, 0);
+  }
+  get top() {
+    return this.position.y - this.height / 2;
+  }
+  get bottom() {
+    return this.position.y + this.height / 2;
+  }
+  get left() {
+    return this.position.x - this.width / 2;
+  }
+  get right() {
+    return this.position.x + this.width / 2;
+  }
+}
+class Point {
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+  }
+}
+class Vector2D {
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+  }
+  get magnitude() {
+    if (this.x === 0 && this.y === 0) return 0;
+    else return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 }
 export default Model;
