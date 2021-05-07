@@ -10,7 +10,7 @@ class View {
       radius: 0,
       color: 'red',
     };
-    this.playerPadding = 10;
+    this.playerPadding = 0;
     this.player = {
       x: 0,
       y: 0,
@@ -27,14 +27,14 @@ class View {
     };
   }
   setPlayer(player) {
-    this.player.x = player.x + this.playerPadding;
-    this.player.y = player.y - player.height / 2;
+    this.player.x = player.x;
+    this.player.y = player.y;
     this.player.width = player.width;
     this.player.height = player.height;
   }
   setAi(ai) {
-    this.ai.x = ai.x - ai.width - this.playerPadding;
-    this.ai.y = ai.y - ai.height / 2;
+    this.ai.x = ai.x;
+    this.ai.y = ai.y;
     this.ai.width = ai.width;
     this.ai.height = ai.height;
   }

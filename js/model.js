@@ -3,6 +3,8 @@ import Event from './event.js';
 class Model {
   constructor() {
     this.table = new Table(600, 400);
+    this.playerWidth = 15;
+    this.playerHeight = 100;
     this.ball = new Ball(
       this.table.width / 2,
       this.table.height / 2,
@@ -10,16 +12,16 @@ class Model {
     );
     this.player = new Player(
       0,
-      this.table.height / 2,
-      15,
-      100,
+      this.table.height / 2 - this.playerHeight / 2,
+      this.playerWidth,
+      this.playerHeight,
       'Player',
     );
     this.ai = new Player(
-      this.table.width,
-      this.table.height / 2,
-      15,
-      100,
+      this.table.width - this.playerWidth,
+      this.table.height / 2 - this.playerHeight / 2,
+      this.playerWidth,
+      this.playerHeight,
       'AI',
     );
     this.playerEvent = new Event();
@@ -33,19 +35,64 @@ class Model {
     this.ballEvent = new Event();
   }
 
+  resetBall() {
+    [this.ball.position.x, this.ball.position.y] = [
+      this.table.width / 2,
+      this.table.height / 2,
+    ];
+    this.initialDirection = Math.random() * (2 * Math.PI);
+    [this.ball.velocity.x, this.ball.velocity.y] = [
+      Math.cos(this.initialDirection) * this.initialSpeed,
+      Math.sin(this.initialDirection) * this.initialSpeed,
+    ];
+  }
+
+  wallHit() {
+    if (this.ball.bottom > this.table.height || this.ball.top < 0) {
+      this.ball.velocity.y *= -1;
+    }
+  }
   updateAI() {
-    if (this.ball.top - this.ai.height / 2 <= 0) {
-      this.ai.position.y = this.ai.height / 2;
+    if (this.ball.top - this.ai.height / 2 < 0) {
+      this.ai.position.y = 0;
     } else if (
-      this.ball.bottom + this.ai.height / 2 >=
+      this.ball.bottom + this.ai.height / 2 >
       this.table.height
     ) {
-      this.ai.position.y = this.table.height - this.ai.height / 2;
-    } else this.ai.position.y = this.ball.position.y;
+      this.ai.position.y = this.table.height - this.ai.height;
+    } else
+      this.ai.position.y = this.ball.position.y - this.ai.height / 2;
+  }
+  collision(ball, player) {
+    return (
+      player.left < ball.right &&
+      player.top < ball.bottom &&
+      player.right > ball.left &&
+      player.bottom > ball.top
+    );
   }
 
   update() {
+    if (this.ball.left <= 0) {
+      this.ai.score += 1;
+      this.resetBall();
+    }
+    this.ball.position.x += this.ball.velocity.x;
+    this.ball.position.y += this.ball.velocity.y;
     this.updateAI();
+    this.wallHit();
+    let currentPlayer =
+      this.ball.position.x > this.table.width / 2
+        ? this.ai
+        : this.player;
+    if (this.collision(currentPlayer, this.ball)) {
+      this.ball.velocity.x *= -1;
+    }
+    this.ballEvent.trigger({
+      x: this.ball.position.x,
+      y: this.ball.position.y,
+      radius: this.ball.radius,
+    });
     this.aiEvent.trigger({
       x: this.ai.position.x,
       y: this.ai.position.y,
@@ -58,22 +105,6 @@ class Model {
       width: this.player.width,
       height: this.player.height,
     });
-    this.collision();
-    this.ball.position.x += this.ball.velocity.x;
-    this.ball.position.y += this.ball.velocity.y;
-    this.ballEvent.trigger({
-      x: this.ball.position.x,
-      y: this.ball.position.y,
-      radius: this.ball.radius,
-    });
-  }
-
-  collision() {
-    if (this.ball.bottom >= this.table.height || this.ball.top <= 0) {
-      this.ball.velocity.y *= -1;
-    }
-    if (this.ball.right >= this.table.width || this.ball.left <= 0)
-      this.ball.velocity.x *= -1;
   }
 }
 class Table {
@@ -129,16 +160,16 @@ class Player {
     this.velocity = new Vector2D(0, 0);
   }
   get top() {
-    return this.position.y - this.height / 2;
+    return this.position.y;
   }
   get bottom() {
-    return this.position.y + this.height / 2;
+    return this.position.y + this.height;
   }
   get left() {
-    return this.position.x - this.width / 2;
+    return this.position.x;
   }
   get right() {
-    return this.position.x + this.width / 2;
+    return this.position.x + this.width;
   }
 }
 class Point {
