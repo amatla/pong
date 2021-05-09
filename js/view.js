@@ -51,7 +51,6 @@ class View {
   setScore(score) {
     if (score.name == 'AI') this.ai.score += 1;
     if (score.name == 'Player') this.player.score += 1;
-    console.log(this.ai.score);
   }
   clear() {
     this.ctx.fillStyle = 'blue';

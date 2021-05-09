@@ -52,6 +52,7 @@ class Model {
   wallHit() {
     if (this.ball.bottom > this.table.height || this.ball.top < 0) {
       this.ball.velocity.y *= -1;
+      this.ball.speed += 0.1;
     }
   }
   updateAI() {
@@ -63,7 +64,10 @@ class Model {
     ) {
       this.ai.position.y = this.table.height - this.ai.height;
     } else
-      this.ai.position.y = this.ball.position.y - this.ai.height / 2;
+      this.ai.position.y +=
+        (this.ball.position.y -
+          (this.ai.position.y + this.ai.height / 2)) *
+        0.1;
   }
   collision(ball, player) {
     return (
@@ -111,6 +115,7 @@ class Model {
         direction * this.ball.speed * Math.cos(angle);
       this.ball.velocity.y =
         direction * this.ball.speed * Math.sin(angle);
+      this.ball.speed += 0.5;
     }
     this.ballEvent.trigger({
       x: this.ball.position.x,
