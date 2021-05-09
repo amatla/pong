@@ -5,7 +5,6 @@ class Controller {
   constructor() {
     this.model = new Model();
     this.view = new View();
-    this.start;
     this.model.ballEvent.addListner((ball) =>
       this.view.setBall(ball),
     );
@@ -16,6 +15,13 @@ class Controller {
     this.model.scoreEvent.addListner((score) =>
       this.view.setScore(score),
     );
+    this.model.playerEvent.trigger({
+      x: this.model.player.position.x,
+      y: this.model.player.position.y,
+      width: this.model.player.width,
+      height: this.model.player.height,
+    });
+    this.model.resetBall();
   }
 
   run() {

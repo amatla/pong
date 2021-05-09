@@ -26,11 +26,6 @@ class Model {
       'AI',
     );
     this.initialSpeed = 2;
-    this.initialDirection = Math.random() * (2 * Math.PI);
-    [this.ball.velocity.x, this.ball.velocity.y] = [
-      Math.cos(this.initialDirection) * this.initialSpeed,
-      Math.sin(this.initialDirection) * this.initialSpeed,
-    ];
     this.playerEvent = new Event();
     this.aiEvent = new Event();
     this.scoreEvent = new Event();
@@ -56,18 +51,23 @@ class Model {
     }
   }
   updateAI() {
-    if (this.ball.top - this.ai.height / 2 < 0) {
-      this.ai.position.y = 0;
-    } else if (
-      this.ball.bottom + this.ai.height / 2 >
-      this.table.height
-    ) {
-      this.ai.position.y = this.table.height - this.ai.height;
-    } else
-      this.ai.position.y +=
-        (this.ball.position.y -
-          (this.ai.position.y + this.ai.height / 2)) *
-        0.1;
+    // if (this.ball.top - this.ai.height / 2 < 0) {
+    //   this.ai.position.y = 0;
+    // } else if (
+    //   this.ball.bottom + this.ai.height / 2 >
+    //   this.table.height
+    // ) {
+    //   this.ai.position.y = this.table.height - this.ai.height;
+    // } else
+    this.ai.position.y +=
+      (this.ball.position.y -
+        (this.ai.position.y + this.ai.height / 2)) *
+      0.01;
+  }
+  updatePlayer() {
+    this.player.position.y +=
+      this.ball.position.y -
+      (this.player.position.y + this.player.height / 2);
   }
   collision(ball, player) {
     return (
@@ -92,16 +92,17 @@ class Model {
       });
     }
     if (this.ball.right >= this.table.width) {
-      this.player.score = +1;
+      this.player.score += 1;
       this.resetBall();
       this.scoreEvent.trigger({
-        name: this.ai.name,
+        name: this.player.name,
         score: this.player.score,
       });
     }
     this.ball.position.x += this.ball.velocity.x;
     this.ball.position.y += this.ball.velocity.y;
     this.updateAI();
+    this.updatePlayer();
     this.wallHit();
     if (this.collision(currentPlayer, this.ball)) {
       let collisionPt =
