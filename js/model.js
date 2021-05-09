@@ -5,33 +5,35 @@ class Model {
     this.table = new Table(600, 400);
     this.playerWidth = 15;
     this.playerHeight = 100;
+    this.playerPadding = 20;
     this.ball = new Ball(
       this.table.width / 2,
       this.table.height / 2,
       6,
     );
     this.player = new Player(
-      0,
+      0 + this.playerPadding,
       this.table.height / 2 - this.playerHeight / 2,
       this.playerWidth,
       this.playerHeight,
       'Player',
     );
     this.ai = new Player(
-      this.table.width - this.playerWidth,
+      this.table.width - this.playerWidth - this.playerPadding,
       this.table.height / 2 - this.playerHeight / 2,
       this.playerWidth,
       this.playerHeight,
       'AI',
     );
-    this.playerEvent = new Event();
-    this.aiEvent = new Event();
     this.initialSpeed = 2;
     this.initialDirection = Math.random() * (2 * Math.PI);
     [this.ball.velocity.x, this.ball.velocity.y] = [
       Math.cos(this.initialDirection) * this.initialSpeed,
       Math.sin(this.initialDirection) * this.initialSpeed,
     ];
+    this.playerEvent = new Event();
+    this.aiEvent = new Event();
+    this.scoreEvent = new Event();
     this.ballEvent = new Event();
   }
 
@@ -73,20 +75,42 @@ class Model {
   }
 
   update() {
+    let currentPlayer =
+      this.ball.position.x > this.table.width / 2
+        ? this.ai
+        : this.player;
     if (this.ball.left <= 0) {
       this.ai.score += 1;
       this.resetBall();
+      this.scoreEvent.trigger({
+        name: this.ai.name,
+        score: this.ai.score,
+      });
+    }
+    if (this.ball.right >= this.table.width) {
+      this.player.score = +1;
+      this.resetBall();
+      this.scoreEvent.trigger({
+        name: this.ai.name,
+        score: this.player.score,
+      });
     }
     this.ball.position.x += this.ball.velocity.x;
     this.ball.position.y += this.ball.velocity.y;
     this.updateAI();
     this.wallHit();
-    let currentPlayer =
-      this.ball.position.x > this.table.width / 2
-        ? this.ai
-        : this.player;
     if (this.collision(currentPlayer, this.ball)) {
-      this.ball.velocity.x *= -1;
+      let collisionPt =
+        this.ball.position.y -
+        (currentPlayer.position.y + currentPlayer.height / 2);
+      collisionPt = collisionPt / (currentPlayer.height / 2);
+      let angle = (Math.PI / 4) * collisionPt;
+      let direction =
+        this.ball.position.x < this.table.width / 2 ? 1 : -1;
+      this.ball.velocity.x =
+        direction * this.ball.speed * Math.cos(angle);
+      this.ball.velocity.y =
+        direction * this.ball.speed * Math.sin(angle);
     }
     this.ballEvent.trigger({
       x: this.ball.position.x,

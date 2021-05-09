@@ -13,6 +13,9 @@ class Controller {
       this.view.setPlayer(player),
     );
     this.model.aiEvent.addListner((ai) => this.view.setAi(ai));
+    this.model.scoreEvent.addListner((score) =>
+      this.view.setScore(score),
+    );
   }
 
   run() {
