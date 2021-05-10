@@ -15,6 +15,9 @@ class Controller {
     this.model.scoreEvent.addListner((score) =>
       this.view.setScore(score),
     );
+    this.view.updatePlayerEvent.addListner((playerPosition) =>
+      this.model.updatePlayer(playerPosition),
+    );
     this.model.playerEvent.trigger({
       x: this.model.player.position.x,
       y: this.model.player.position.y,

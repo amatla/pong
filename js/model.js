@@ -62,12 +62,11 @@ class Model {
     this.ai.position.y +=
       (this.ball.position.y -
         (this.ai.position.y + this.ai.height / 2)) *
-      0.01;
+      0.05;
   }
-  updatePlayer() {
-    this.player.position.y +=
-      this.ball.position.y -
-      (this.player.position.y + this.player.height / 2);
+  updatePlayer(playerPosition) {
+    console.log();
+    this.player.position.y = playerPosition.y;
   }
   collision(ball, player) {
     return (
@@ -102,7 +101,6 @@ class Model {
     this.ball.position.x += this.ball.velocity.x;
     this.ball.position.y += this.ball.velocity.y;
     this.updateAI();
-    this.updatePlayer();
     this.wallHit();
     if (this.collision(currentPlayer, this.ball)) {
       let collisionPt =
@@ -128,12 +126,6 @@ class Model {
       y: this.ai.position.y,
       width: this.ai.width,
       height: this.ai.height,
-    });
-    this.playerEvent.trigger({
-      x: this.player.position.x,
-      y: this.player.position.y,
-      width: this.player.width,
-      height: this.player.height,
     });
   }
 }

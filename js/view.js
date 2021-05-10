@@ -4,6 +4,15 @@ class View {
   constructor() {
     this.cvs = document.getElementById('pong');
     this.ctx = this.cvs.getContext('2d');
+    this.updatePlayerEvent = new Event();
+    this.cvs.addEventListener('mousemove', (event) => {
+      let bound = this.cvs.getBoundingClientRect();
+      this.player.y =
+        event.clientY - bound.top - this.player.height / 2;
+
+      this.updatePlayerEvent.trigger({ y: this.player.y });
+    });
+
     this.ball = {
       x: 0,
       y: 0,
@@ -51,6 +60,11 @@ class View {
   setScore(score) {
     if (score.name == 'AI') this.ai.score += 1;
     if (score.name == 'Player') this.player.score += 1;
+  }
+  movePlayer(evt) {
+    console.log(this.cvs);
+    // this.player.y = evt.clientY - bound.top;
+    // console.log(this.player.y);
   }
   clear() {
     this.ctx.fillStyle = 'blue';
