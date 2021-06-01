@@ -1,77 +1,46 @@
 import Event from './event.js';
 
 class View {
-  constructor() {
+  constructor(
+    tableWidth = 600,
+    tableHeight = 400,
+    paddleWidth = 15,
+    paddleHeight = 100,
+    playerPadding = 20,
+    ballRadius = 6,
+  ) {
     this.cvs = document.getElementById('pong');
     this.ctx = this.cvs.getContext('2d');
-    this.updatePlayerEvent = new Event();
+    this.playerEvent = new Event();
     this.cvs.addEventListener('mousemove', (event) => {
       let bound = this.cvs.getBoundingClientRect();
       this.player.y =
         event.clientY - bound.top - this.player.height / 2;
-
-      this.updatePlayerEvent.trigger({ y: this.player.y });
+      this.playerEvent.trigger({ y: this.player.y });
     });
-
-    this.ball = {
-      x: 0,
-      y: 0,
-      radius: 0,
-      color: 'red',
-    };
-    this.playerPadding = 10;
+    this.ballColor = 'red';
+    this.aiColor = 'orange';
     this.player = {
       x: 0,
       y: 0,
-      width: 0,
-      height: 0,
+      width: paddleWidth,
+      height: paddleHeight,
       score: 0,
-      color: 'orange',
-    };
-    this.ai = {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-      score: 0,
-      color: 'green',
-    };
-    this.net = {
-      x: this.cvs.width / 2 - 2,
     };
   }
-  setPlayer(player) {
-    this.player.x = player.x;
-    this.player.y = player.y;
-    this.player.width = player.width;
-    this.player.height = player.height;
-  }
-  setAi(ai) {
-    this.ai.x = ai.x;
-    this.ai.y = ai.y;
-    this.ai.width = ai.width;
-    this.ai.height = ai.height;
-  }
-  setBall(ball) {
-    this.ball.x = ball.x;
-    this.ball.y = ball.y;
-    this.ball.radius = ball.radius;
-  }
-  setScore(score) {
-    if (score.name == 'AI') this.ai.score += 1;
-    if (score.name == 'Player') this.player.score += 1;
-  }
-  movePlayer(evt) {
-    console.log(this.cvs);
-    // this.player.y = evt.clientY - bound.top;
-    // console.log(this.player.y);
-  }
-  clear() {
+  refresh() {
     this.ctx.fillStyle = 'blue';
     this.ctx.fillRect(0, 0, this.cvs.width, this.cvs.height);
   }
+  drawBall(ball) {
+    this.refresh();
+    this.ctx.fillStyle = this.ballColor;
+    this.ctx.beginPath();
+    this.ctx.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI, false);
+    this.ctx.fill();
+  }
   drawPlayer(player) {
-    this.ctx.fillStyle = player.color;
+    this.ctx.fillStyle = this.aiColor;
     this.ctx.fillRect(
       player.x,
       player.y,
@@ -79,29 +48,17 @@ class View {
       player.height,
     );
   }
-  drawBall() {
-    this.ctx.fillStyle = this.ball.color;
-    this.ctx.beginPath();
-    this.ctx.arc(
-      this.ball.x,
-      this.ball.y,
-      this.ball.radius,
-      0,
-      2 * Math.PI,
-      false,
-    );
-    this.ctx.fill();
-  }
-  drawScore() {
+  drawScore(score) {
+    console.log('score  ');
     this.ctx.fillStyle = 'white';
     this.ctx.font = '72px fira code';
     this.ctx.fillText(
-      this.ai.score,
+      score.ai,
       (3 * this.cvs.width) / 4,
       this.cvs.height / 6,
     );
     this.ctx.fillText(
-      this.player.score,
+      score.player,
       this.cvs.width / 5,
       this.cvs.height / 6,
     );
@@ -109,13 +66,5 @@ class View {
       this.ctx.fillRect(this.cvs.width / 2 - 2, i, 4, 10);
     }
   }
-  render() {
-    this.clear();
-    this.drawPlayer(this.player);
-    this.drawPlayer(this.ai);
-    this.drawBall();
-    this.drawScore();
-  }
 }
-
 export default View;
